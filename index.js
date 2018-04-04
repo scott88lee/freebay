@@ -43,8 +43,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get('/', (request, response) => {        // Renders home
   
   if (request.cookies.loggedin == "true"){   //START OF USER BLOCK
-    
-    response.render('dashboard');
+
+    pool.connect(( err, client, done) =>{
+      let sql = "SELECT * FROM users WHERE email = '" + request.cookies.email + "'";
+      client.query(sql, (err,res)=>{
+            console.log(res.rows[0]);
+            response.render('dashboard', {user : res.rows[0] });
+      });
+    });
+
 
   } else {  // END OF USER BLOCK
 
@@ -54,6 +61,12 @@ app.get('/', (request, response) => {        // Renders home
 
 app.get('/login', (request, response) => {         // Renders home
   response.render('login');
+});
+
+app.get('/logout', (request, response) => {         // Renders home
+  request.cookies.loggedin = "false"
+  request.cookies.email = undefined;
+  response.render('home');
 });
 
 app.post('/login', (request, response) => { // Registration Route
@@ -92,11 +105,11 @@ app.post('/register', (request, response) => { // Registration Route
   
   bcrypt.hash(request.body.password, 10, (err,hash)=>{   // Hashes password
     
-    let params = [request.body.username, hash, request.body.email];
+    let params = [request.body.firstName, request.body.lastName, hash, request.body.email];
 
     pool.connect( ( error , client , done )  => {     // Stores into DB users
 
-      let sql = "INSERT INTO users (name, pwdhash, email) VALUES ($1, $2, $3)"
+      let sql = "INSERT INTO users (firstName, lastName, pwdhash, email) VALUES ($1, $2, $3, $4)"
 
       client.query(sql, params, (err, res) => {
         if (err) console.log(err);
