@@ -1,0 +1,26 @@
+<html>
+<head>
+	<title>Post item - Freebay!</title>
+	<link rel="stylesheet" href="https://unpkg.com/blaze@4.0.0-6/scss/dist/blaze.min.css">
+</head>
+<body>
+Welcome to Freebay! <a href="/register">Register</a> <a href="/login">Login</a>
+<br><br>
+
+<h2>Item to give away: </h2>
+<form action="/give" method="POST">
+  Item name : <input type="text" name="itemname"><br>
+  Description : <textarea name="description" rows="8" cols="18">Short description.</textarea><br>
+  Img URL : <input type="text" name="imglink"> <br>
+  Shipping : 
+  <select name="shipping">
+  	<option value="courier">Courier service</option>
+  	<option value="pickup">Self Pick-up</option>
+	<option value="flexible">Flexible</option>
+  </select><br>
+  <button type="reset" value="Reset">Reset</button>
+  <input type="submit" value="Submit">
+</form>
+
+</body>
+</html>

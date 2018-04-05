@@ -1,13 +1,24 @@
-<html>
-<head>
-<title>Freebay!
-</title>
-</head>
-<body>
-<p>Welcome {{user.firstname}} {{user.lastname}}. <a href="/logout">Logout</a> </p>
+<br><br><br><p>Welcome {{user.firstname}}. <a href="/logout">Logout</a> </p>
+<a href="/">Home</a>
+Dashboard
+<a href="/inbox">Inbox</a>
 
-<h1>Dashboard</h1>
-<p>You have {{msgCount}} messages.</p>
+<h2>Your items</h2>
+<ul>{{#each user}}
+	<li><a href="/{{this.ownerid}}/{{itemid}}">{{this.itemname}}</a></li>
+	{{/each}}
+</ul>
+<a href="/give">Post an item for giveaway!</a>
+
+<div class="content">
+      <div class="header">Your items</div>
+      <div class="meta">
+        <span class="category">Animals</span>
+      </div>
+      <div class="description">
+        <img src="../assets/images/wireframe/paragraph.png" class="ui wireframe image">
+      </div>
+    </div>
 
 </body>
 </html>
