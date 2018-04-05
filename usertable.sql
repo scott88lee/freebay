@@ -9,20 +9,16 @@ CREATE TABLE users (
 );
 
 CREATE TABLE messages (
-    id SERIAL PRIMARY KEY,
+    messageid SERIAL PRIMARY KEY,
     originId INT NOT NULL,
     destId INT NOT NULL,
+    subject VARCHAR(55),
     message TEXT NOT NULL,
     read BOOLEAN NOT NULL
 );
 
-CREATE TABLE test (
-    id SERIAL PRIMARY KEY,
-    hits INT NOT NULL,
-);
-
 CREATE TABLE items (
-    id SERIAL PRIMARY KEY,
+    itemid SERIAL PRIMARY KEY,
     itemname VARCHAR(255) NOT NULL,
     description TEXT,
     imglink VARCHAR(255),

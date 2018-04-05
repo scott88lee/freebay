@@ -14,15 +14,33 @@
 	<div class="ui container">
 		<a href="/" class="header item">
 			<img class="logo" src="/images/logo.png">
-			{{firstname}} Welcome to Freebay!
+			Welcome to Freebay!
 		</a>
 	</div>
 	<div class="right menu">
+		{{#if firstname}}
+
+		<div class="ui simple dropdown item">
+        {{firstname}} <i class="dropdown icon"></i>
+        <div class="menu">
+          <a class="item" href="/">Dashboard</a>
+          <a class="item" href="/profile">Profile</a>
+          <a class="item" href="/inbox">Inbox</a>
+          <a class="item" href="/howto">Help</a>
+        </div>
+   		</div>
+
+		<a href="/logout" class="header item">Logout</a>
+
+		{{else}}
+
 		<a href="/register" class="header item">Register</a>
-		<a href="/login" class="header item">Login</a>
+		<a href="/login" class="header item"> Login </a>
+		{{/if}}
 	</div>
 </div>
 <br>
+
 {{{body}}}
 
 <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity = "sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>

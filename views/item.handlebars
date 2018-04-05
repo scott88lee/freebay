@@ -1,12 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>{{user.itemname}} - Freebay!</title>
-</head>
-<body>
-	<h1>{{user.itemname}}</h1>
-	<img src="{{user.imglink}}">
-	<p>{{user.description}}</p>
-	<p>Means of collection: {{user.shipping}}</p>
-</body>
-</html>
+<br><br>
+
+<div class="ui card">
+	<div class="content">
+		<div class="header">{{user.itemname}}</div>
+		<div class="description">
+			<img src="{{user.imglink}}" class="ui wireframe image">
+		</div>
+		<div class="meta">
+			<span class="category">{{user.description}}</span>
+		</div>
+	</div>
+	<div class="extra content">
+		<div class="right floated author">
+			<span>Means of collection: </span> {{user.shipping}}
+		</div>
+	</div>
+</div>

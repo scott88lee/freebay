@@ -1,26 +1,30 @@
-<html>
-<head>
-	<title>Post item - Freebay!</title>
-	<link rel="stylesheet" href="https://unpkg.com/blaze@4.0.0-6/scss/dist/blaze.min.css">
-</head>
-<body>
-Welcome to Freebay! <a href="/register">Register</a> <a href="/login">Login</a>
-<br><br>
+<br><br><br>
+<div class="ui main text container">
+<form class="ui form" action="/give" method="POST">
+	<h2>Item to give away: </h2>
+      <div class="field">
+        <label>Item name : </label>
+        <input type="text" name="itemname" placeholder="Item Name">
+      </div>
+      <div class="field">
+    	<label>Description : </label>
+    	<textarea  name="description" rows="8"></textarea>
+  	  </div>
+      <div class="field">
+        <label>Image URL :</label>
+        <input type="text" name="imglink" placeholder="http://www.">
+      </div>
 
-<h2>Item to give away: </h2>
-<form action="/give" method="POST">
-  Item name : <input type="text" name="itemname"><br>
-  Description : <textarea name="description" rows="8" cols="18">Short description.</textarea><br>
-  Img URL : <input type="text" name="imglink"> <br>
-  Shipping : 
-  <select name="shipping">
-  	<option value="courier">Courier service</option>
-  	<option value="pickup">Self Pick-up</option>
-	<option value="flexible">Flexible</option>
-  </select><br>
-  <button type="reset" value="Reset">Reset</button>
-  <input type="submit" value="Submit">
+      <div class="field">
+        	<label>Shipping :</label>
+  			<select class="ui selection dropdown" name="shipping">
+			  	<option value="courier">Courier service</option>
+			  	<option value="pickup">Self Pick-up</option>
+				<option value="flexible">Flexible</option>
+  			</select>
+      </div>
+
+ 	<button class="ui button" type="reset" value="Reset">Reset</button>
+    <button class="ui button" type="submit">Submit</button>
 </form>
-
-</body>
-</html>
+</div>

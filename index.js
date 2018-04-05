@@ -50,18 +50,6 @@ app.get('/login', (request, response) => {         // Renders home
   response.render('login');
 });
 
-// app.get('/:id/:itemid', (request,response) => {
-
-//   pool.connect(( err, client, done) =>{
-//       let sql = "SELECT * FROM users INNER JOIN items ON users.id = items.ownerid WHERE users.id = '"+ request.params.id + "' AND items.itemid = '" + request.params.itemid + "'";
-//       client.query(sql, (err,res) => {
-//             console.log(res.rows[0]);
-//             response.render('item', {user : res.rows[0] });
-//       });
-//     });
-
-// });
-
 app.get('/', (request, response) => {        // Renders home
   
   if (request.cookies.loggedin == "true"){   //START OF USER BLOCK
@@ -69,8 +57,7 @@ app.get('/', (request, response) => {        // Renders home
     pool.connect(( err, client, done) =>{
       let sql = "SELECT * FROM users INNER JOIN items ON users.id = items.ownerid WHERE users.id = '"+ request.cookies.userid + "'";
       client.query(sql, (err,res) => {
-            //console.log(res.rows);
-            response.render('dashboard', {user : res.rows });
+            response.render('dashboard', {user : res.rows, firstname : request.cookies.firstname });
       });
     });
 
@@ -191,6 +178,17 @@ app.post('/register', (request, response) => { // Registration Route
   });
 });
 
+app.get('/:id/:itemid', (request,response) => {
+
+  pool.connect(( err, client, done) =>{
+      let sql = "SELECT * FROM users INNER JOIN items ON users.id = items.ownerid WHERE users.id = '"+ request.params.id + "' AND items.itemid = '" + request.params.itemid + "'";
+      client.query(sql, (err,res) => {
+            console.log(res.rows[0]);
+            response.render('item', {user : res.rows[0] });
+      });
+    });
+
+});
 
 /** ================================
  * Listen to requests on port 3000

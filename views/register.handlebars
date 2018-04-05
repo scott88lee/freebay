@@ -1,21 +1,60 @@
-<html>
-<head>
-	<title>Register - Freebay!</title>
-	<link rel="stylesheet" href="https://unpkg.com/blaze@4.0.0-6/scss/dist/blaze.min.css">
-</head>
-<body>
-Welcome to Freebay! <a href="/register">Register</a> <a href="/login">Login</a>
 <br><br>
 
-<h2>Create a new account: </h2>
-<form action="/register" method="POST">
-  First Name : <input type="text" name="firstName"><br>
-  Last Name : <input type="text" name="lastName"><br>
-  Email : <input type="text" name="email"> <br>
-  Password : <input type="password" name="password"><br>
-  <button type="reset" value="Reset">Reset</button>
-  <input type="submit" value="Submit">
-</form>
+  <style type="text/css">
+    body {
+      background-color: #DADADA;
+    }
+    body > .grid {
+      height: 100%;
+    }
+    .image {
+      margin-top: -100px;
+    }
+    .column {
+      max-width: 450px;
+    }
+  </style>
 
-</body>
-</html>
+<div class="ui middle aligned center aligned grid">
+  <div class="column">
+    <h2 class="ui image header">
+      <img src="images/logo.png" class="image">
+      <div class="content">
+        Sign up!
+      </div>
+    </h2>
+    <form class="ui large form" action="/register" method="POST">
+      <div class="ui stacked segment">
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="user icon"></i>
+            <input type="text" name="firstname" placeholder="First Name">
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="user icon"></i>
+            <input type="text" name="lastname" placeholder="Last Name">
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="mail icon"></i>
+            <input type="text" name="email" placeholder="E-mail address">
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="lock icon"></i>
+            <input type="password" name="password" placeholder="Password">
+          </div>
+        </div>
+        <button class="ui fluid large submit button" type="submit">Login</button>
+      </div>
+
+      <div class="ui error message"></div>
+
+    </form>
+
+  </div>
+</div>
