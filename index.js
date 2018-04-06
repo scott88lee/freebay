@@ -100,11 +100,11 @@ app.get('/', (request, response) => {
   if (request.cookies.loggedin == "true"){   //START OF USER BLOCK
 
     pool.connect(( err, client, done) =>{
-      if (err) console.log(err);
+      if (err) console.log("Pool connect error: " + err);
       let sql = "SELECT * FROM users INNER JOIN items ON users.id = items.ownerid WHERE users.id = '"+ request.cookies.userid + "'";
       client.query(sql, (error,res) => {
-          if (error) console.log(error);
-          console.log(res);
+          if (error) console.log("Pool query error: " + error);
+          console.log("Query result : " + res);
           let data = {
             itemcount : res.rows.length,
             karma: res.rows[0].karma
