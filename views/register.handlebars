@@ -17,8 +17,11 @@
 
 <div class="ui middle aligned center aligned grid">
   <div class="column">
+
+  	{{#if message}}<h3>{{message}}</h3>{{/if}}
+
     <h2 class="ui image header">
-      <img src="images/logo.png" class="image">
+      <img src="images/logo.gif" class="image">
       <div class="content">
         Sign up!
       </div>
@@ -49,11 +52,8 @@
             <input type="password" name="password" placeholder="Password">
           </div>
         </div>
-        <button class="ui fluid large submit button" type="submit">Login</button>
+        <button class="ui fluid large submit button" type="submit">Register</button>
       </div>
-
-      <div class="ui error message"></div>
-
     </form>
 
   </div>

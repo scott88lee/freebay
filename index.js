@@ -45,19 +45,35 @@ app.use(bodyParser.urlencoded({ extended: true }));
 /**================================
  * Routes
  * ===============================*/
+app.get("/itemlist", (request,response) => {    // RENDERS ALL ITEMS
+    pool.connect( (error, client, done) => {    // IN ONE GRID PAGE.
+    if (error) console.log(error);
+    
+    let sql = "SELECT * FROM items WHERE itemvisible = true"
+    pool.query(sql, (err, res) => {
+      response.render('itemlist', {item : res.rows});
+    });
+  });
+});
 
 app.get('/login', (request, response) => {         // Renders home
   response.render('login');
 });
 
-app.get('/', (request, response) => {        // Renders home
+app.get('/', (request, response) => {        
   
   if (request.cookies.loggedin == "true"){   //START OF USER BLOCK
 
     pool.connect(( err, client, done) =>{
+      if (err) console.log(err);
       let sql = "SELECT * FROM users INNER JOIN items ON users.id = items.ownerid WHERE users.id = '"+ request.cookies.userid + "'";
-      client.query(sql, (err,res) => {
-            response.render('dashboard', {user : res.rows, firstname : request.cookies.firstname });
+      client.query(sql, (error,res) => {
+          if (error) console.log(error);
+          let data = {
+            itemcount : res.rows.length,
+            karma: res.rows[0].karma
+          }
+          response.render('dashboard', {user : res.rows, dash: data, firstname : request.cookies.firstname});
       });
     });
 
@@ -68,29 +84,43 @@ app.get('/', (request, response) => {        // Renders home
 
 app.get('/give', (request, response) => {
   if (request.cookies.loggedin == "true"){
-  response.render('postitem');
+  response.render('postitem', {firstname : request.cookies.firstname});
   } else {
-    response.redirect('/login');
+    response.render('login', {message: "Please log in first before posting items."});
   }
 });
 
-app.post('/give', (request, response) => {
-  pool.connect( (error, client, done) => {
-    
-    let sql = "INSERT INTO items (itemname, description, imglink, ownerid, shipping) VALUES ($1, $2, $3, $4, $5)";
-    let params = [request.body.itemname, request.body.description, request.body.imglink, request.cookies.userid, request.body.shipping]
-    
-    client.query(sql, params,(err,res)=> {
-      response.redirect('/');
-    });
-  });
-});
+app.post('/give', (request, response) => {  //1
+  pool.connect( (error, client, done) => {  //2
+    if (error) console.log(error);
 
-app.get('/inbox', (request,response)=>{
+    let sql = "INSERT INTO items (itemname, description, imglink, ownerid, condition, shipping) VALUES ($1, $2, $3, $4, $5, $6)";
+    let params = [request.body.itemname, request.body.description, request.body.imglink, request.cookies.userid, request.body.condition, request.body.shipping]
+    client.query(sql, params,(err,res)=> {  //3
+      if (err) console.log(err);
+
+      let sql = "SELECT * FROM users WHERE email = '" + request.cookies.email + "'";
+      client.query(sql, (err,res) => {  // 4
+  
+        let karma = res.rows[0].karma + 1;
+        let cmd = "UPDATE users SET karma = '" + karma + "' WHERE email = '" + request.cookies.email + "' RETURNING *";
+        client.query(cmd, (err, result) => {  //5
+          if (err) console.log(err);
+          
+          response.redirect('/');
+          done();
+      }); // 5
+    }); // 4
+    }); // 3
+  }); // 2
+}); // 1
+
+app.get('/inbox', (request,response) => {
   pool.connect((error, client, done) => {
+    if (error) console.log(error);
     let sql = "SELECT * FROM users U INNER JOIN messages M ON U.id = M.destid INNER JOIN users UN ON M.originid = UN.id WHERE U.id = '"+ request.cookies.userid + "'";
     client.query(sql, (err,res) => {
-
+      if (err) console.log(err);
       let data = { 
         inbox : res.rows.length,
         firstname : request.cookies.firstname,
@@ -121,31 +151,33 @@ app.get('/karma', (request, response) => {
 
 app.get('/logout', (request, response) => {         // Renders home
   response.clearCookie('email');
-  response.clearCookie('loggedin'); 
+  response.clearCookie('loggedin');
+  response.clearCookie('firstname');
+  response.clearCookie('userid');
   response.render('home');
 });
 
 app.post('/login', (request, response) => { // Registration Route
-
   pool.connect( ( error , client , done )  => {     // Stores into DB users
-
+    if (error) console.log(error);
     let sql = "SELECT * FROM users WHERE email = '" + request.body.email + "'";
 
       client.query(sql, (err, res) => {
         if (err) console.log(err);
-
-        if (request.body.email === undefined){
-          response.send("Email address doesn't exist");
+        console.log(res.rows);
+        if (res.rows.length === 0){
+          response.render('login', { message : "E-mail address doesn't exist."} );
         } else {
           bcrypt.compare(request.body.password, res.rows[0].pwdhash, (err, result) => { //run bcryot compare
             if (result === true) {
               response.cookie('loggedin', true);
-              response.cookie('email', request.body.email);
+              response.cookie('email', res.rows[0].email);
               response.cookie('userid', res.rows[0].id);
               response.cookie('firstname', res.rows[0].firstname);
               response.redirect('/'); //Pass - Cookie! - Redirect.
+
           } else {
-            response.send("Log in fail, <a href='/login'>Try again</a>");
+            response.render('login', { message : "Wrong password, please try again."} );
             //Fail - Wrong pass
           }
           });
@@ -158,36 +190,55 @@ app.get('/register', (request, response) => { // Routes to register page
   response.render('register');
 });
 
-app.post('/register', (request, response) => { // Registration Route
-  
-  bcrypt.hash(request.body.password, 10, (err,hash)=>{   // Hashes password
+app.post('/register', (request, response)  => { // Registration Route
+  pool.connect( ( error , client , done )  => {
+  if (error) console.log(error);
     
-    let params = [request.body.firstName, request.body.lastName, hash, request.body.email];
+    //Begin check to see if email is already taken.
+    let sql = "SELECT * FROM users WHERE email = '" + request.body.email + "'";
+    client.query(sql, (err, res) => {
+      if (err) console.log(err);
+      
+      if (res.rows.length === 0) {  // START-FRESH EMAIL
 
-    pool.connect( ( error , client , done )  => {     // Stores into DB users
+      bcrypt.hash(request.body.password, 10, (err,hash) => {   // Hashes password
+        
+         // Stores into DB users
+        let params = [request.body.firstname, request.body.lastname, hash, request.body.email];
+        let sql = "INSERT INTO users (firstname, lastname, pwdhash, email) VALUES ($1, $2, $3, $4)"
 
-      let sql = "INSERT INTO users (firstname, lastname, pwdhash, email) VALUES ($1, $2, $3, $4)"
-
-      client.query(sql, params, (err, res) => {
+        client.query(sql, params, (err, res) => {  // STORE SIGNUP DATA
         if (err) console.log(err);
 
         console.log(`New user signed up ${request.body.email}.`);
-        response.redirect('/');
+        response.render('login', { message : "Thanks for signing up!"});
+       
+        });
       });
-    });
-  });
-});
+    } else {  //END - FRESH EMAIL
+      response.render('register', {message:"E-mail is already in use."})
+    } 
+
+    }); // FIRST SQL QUERY
+
+  });   // POOL CONNECT
+});     // APP.GET
 
 app.get('/:id/:itemid', (request,response) => {
 
   pool.connect(( err, client, done) =>{
       let sql = "SELECT * FROM users INNER JOIN items ON users.id = items.ownerid WHERE users.id = '"+ request.params.id + "' AND items.itemid = '" + request.params.itemid + "'";
       client.query(sql, (err,res) => {
-            console.log(res.rows[0]);
-            response.render('item', {user : res.rows[0] });
+            if (err) console.log(err);
+            console.log(res.rows[0]);  //
+
+            if (res.rows[0].email===request.cookies.email){
+              response.render('useritem', {user : res.rows[0], firstname : request.cookies.firstname});
+            } else {
+              response.render('item', {user : res.rows[0], firstname : request.cookies.firstname});
+            }
       });
     });
-
 });
 
 /** ================================

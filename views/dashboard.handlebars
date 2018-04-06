@@ -1,48 +1,59 @@
 <br><br><br>
-<style type="text/css">
+<!-- <style type="text/css">
   .ui.card {
     display : inline-block;
-    margin:5px;
+    margin: 5px;
   }
-</style>
+</style> -->
 
 <div class="ui main text container">
-	<h2>Hello Scott!</h2>
-	<h3>Dashboard</h3>
-
-	<div class="ui doubling container">
-	<div class="ui card">
-		<div class="content">
-			<div class="header">Your items on giveaway: </div>
-			<div class="description">
-				<ul>{{#each user}}
-					<li><a href="/{{this.ownerid}}/{{itemid}}">{{this.itemname}}</a></li>
-					{{/each}}
-				</ul>
-			</div>
-		</div>
-		<div class="extra content">
-			<div class="right floated author">
-				<a href="/give">Post an item for giveaway!</a>
-			</div>
+	<div class="ui segment">
+		<h2>Hello {{firstname}}!</h2>
+		<h3>Dashboard</h3>
+		<div class="ui segment">
+			Karma : {{dash.karma}}
+			Total items: {{dash.itemcount}}
+			Total requests : {{dash.requestcount}}
 		</div>
 	</div>
-	<div class="ui card">
-		<div class="content">
-			<div class="header">Items requested : </div>
-			<div class="description">
-				<ul>{{#each user}}
-					<li><a href="/{{this.ownerid}}/{{itemid}}">{{this.itemname}}</a></li>
-					{{/each}}
-				</ul>
+	
+	<div class="ui two column grid">
+		<div class="column">	
+			<div class="ui fluid card">
+				<div class="content">
+					<div class="header">Your items on giveaway: </div>
+					<div class="description">
+						<ul>{{#each user}}
+							<li><a href="/{{this.ownerid}}/{{itemid}}">{{this.itemname}}</a></li>
+							{{/each}}
+						</ul>
+					</div>
+				</div>
+				<div class="extra content">
+					<div class="right floated author">
+						<a href="/give">Post an item for giveaway!</a>
+					</div>
+				</div>
 			</div>
 		</div>
-		<div class="extra content">
-			<div class="right floated author">
-				<a href="/itemlist">Browse items!</a>
+		<div class="column">
+			<div class="ui fluid card">
+				<div class="content">
+					<div class="header">Items requested : </div>
+					<div class="description">
+						<ul>{{#each user}}
+							<li><a href="/{{this.ownerid}}/{{itemid}}">{{this.itemname}}</a></li>
+							{{/each}}
+						</ul>
+					</div>
+				</div>
+				<div class="extra content">
+					<div class="right floated author">
+						<a href="/itemlist">Browse items!</a>
+					</div>
+				</div>
 			</div>
 		</div>
-	</div>
 	</div>
 </div>
 

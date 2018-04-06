@@ -3,9 +3,11 @@ CREATE TABLE users (
     firstname TEXT NOT NULL,
     lastname TEXT NOT NULL,
     pwdhash TEXT NOT NULL,
-    email TEXT NOT NULL,
-    karma INT,
-    address TEXT
+    email VARCHAR(55) NOT NULL,
+    karma INT DEFAULT 0,
+    address TEXT,
+    pf_pic VARCHAR(80),
+    u_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
 CREATE TABLE messages (
@@ -14,7 +16,10 @@ CREATE TABLE messages (
     destId INT NOT NULL,
     subject VARCHAR(55),
     message TEXT NOT NULL,
-    read BOOLEAN NOT NULL
+    read BOOLEAN NOT NULL DEFAULT FALSE,
+    msgvisible BOOLEAN NOT NULL DEFAULT TRUE,
+    m_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    m_time TIME NOT NULL DEFAULT CURRENT_TIME
 );
 
 CREATE TABLE items (
@@ -23,7 +28,22 @@ CREATE TABLE items (
     description TEXT,
     imglink VARCHAR(255),
     ownerid INT,
-    shipping TEXT
+    condition VARCHAR(50),
+    shipping TEXT,
+    itemvisible BOOLEAN DEFAULT TRUE,
+    i_status VARCHAR(30),
+    i_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    i_time TIME NOT NULL DEFAULT CURRENT_TIME
+);
+
+CREATE TABLE requests (
+    requestid SERIAL PRIMARY KEY,
+    requesteditem INT NOT NULL,
+    message TEXT,
+    reqvisible BOOLEAN DEFAULT TRUE,
+    r_status VARCHAR(30),
+    r_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    r_time TIME NOT NULL DEFAULT CURRENT_TIME
 );
 
 SELECT * FROM users U INNER JOIN messages M ON U.id = M.destid;

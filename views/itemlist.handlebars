@@ -1,0 +1,22 @@
+<style type="text/css">
+.ui.card {
+	display: inline-block;
+	margin: 5px;
+}
+</style>
+<br><br>
+<div class="ui main text container">
+{{#each item}}
+
+<div class="ui card">
+	Item ID: {{this.itemid}}<br>
+	Owner ID: {{this.ownerid}}<br>
+	Item Name: <a href="/{{this.ownerid}}/{{this.itemid}}">{{this.itemname}}</a><br>
+	Description: <p>{{this.description}}</p>
+	Image link: <br>
+	<img src="{{this.imglink}}" width="120" height="120"><br>
+	Condition: {{this.condition}}<br>
+	Shipping: {{this.shipping}}
+</div>
+{{/each}}
+</div>
