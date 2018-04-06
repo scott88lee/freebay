@@ -167,24 +167,6 @@ app.get('/inbox', (request,response) => {
   });
 });
 
-app.get('/karma', (request, response) => {
-  pool.connect( (error, client, done) => {
-    let sql = "SELECT * FROM users WHERE email = '" + request.cookies.email + "'";
-    client.query(sql, (err,res) => {
-      console.log(res.row);
-      let karma = res.rows[0].karma + 1;
-      console.log('new karma', karma)
-      let cmd = "UPDATE users SET karma = '" + karma + "' WHERE email = '" + request.cookies.email + "' RETURNING *";
-      client.query(cmd, (err, result) => {
-        if (err) console.log(err);
-        response.send(result);
-        done();
-      });
-    });
-  });
-});   //PROBLEM WITH MULTI-SQL queries
-
-
 app.get('/logout', (request, response) => {         // Renders home
   response.clearCookie('email');
   response.clearCookie('loggedin');
