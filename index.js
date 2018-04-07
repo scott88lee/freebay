@@ -260,6 +260,25 @@ app.post('/register', (request, response)  => { // Registration Route
   });   // POOL CONNECT
 });     // APP.GET
 
+app.get('/edititem/:itemid', (request,response) => {
+  if (request.cookies.loggedin == "true") {   //START USER BLOCK
+    pool.connect((err, client, done) =>{
+      let sql = "SELECT * FROM items WHERE itemid = '" + request.params.itemid + "'";
+      client.query(sql, (err, res) => {
+      if (err) console.log(err);
+      console.log(res.rows);
+      if (res.rows[0].originid == request.cookies.userid){
+        response.render('edititem', {item:res.rows[0]});
+      } else {
+        response.redirect('/'); //ITEM DOESNT BELONG TO U
+      }
+      });
+    });
+  } else { // END OF USER BLOCK
+    response.render('login', {message: "You need to be logged in to edit items."});
+  }
+});
+
 app.get('/item/:itemid', (request,response) => {
   pool.connect(( err, client, done) =>{
 

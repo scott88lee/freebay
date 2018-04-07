@@ -4,22 +4,22 @@
 		<div class="column">
 			<div class="ui fluid card">
 				<div class="content">
-					<div class="header">{{user.itemname}}</div>
+					<div class="header">{{item.itemname}}</div>
 					<div class="description">
 						<img src="{{user.imglink}}" class="ui wireframe image">
 					</div>
 					<div class="meta">
-						<span class="category">{{user.description}}</span>
+						<span class="category">{{item.description}}</span>
 					</div>
 				</div>
 				<div class="extra content">
 					<div class="right floated author">
-						<span>Condition: </span> {{user.condition}}
+						<span>Condition: </span> {{item.condition}}
 					</div>
 				</div>
 				<div class="extra content">
 					<div class="right floated author">
-						<span>Means of collection: </span> {{user.shipping}}
+						<span>Means of collection: </span> {{item.shipping}}
 					</div>
 				</div>
 			</div>
@@ -28,12 +28,18 @@
 		<div class="column">
 			<div class="ui fluid card">
 				<div class="content">
-					<div class="header">{{user.itemname}}</div>
+					<div class="header">{{item.itemname}}</div>
 					<div class="description">
-						<img src="{{user.imglink}}" class="ui wireframe image">
+						<img src="{{item.imglink}}" class="ui wireframe image">
 					</div>
 					<div class="meta">
-						<span class="category">{{user.description}}</span>
+						<span class="category">{{item.description}}</span>
+					</div>
+				</div>
+				<div class="extra content">
+					<div class="right floated author">
+						<a href="/{{user.id}}/{{user.itemid}}/edit">Edit Item</a>
+						<a href="/{{user.id}}/{{user.itemid}}/delete">Delete Item</a>
 					</div>
 				</div>
 			</div>
