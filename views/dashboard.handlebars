@@ -8,12 +8,12 @@
 
 <div class="ui main text container">
 	<div class="ui segment">
-		<h2>Hello {{firstname}}!</h2>
+		<h2>Hello {{data.firstname}}!</h2>
 		<h3>Dashboard</h3>
 		<div class="ui segment">
-			Karma : {{dash.karma}}
-			Total items: {{dash.itemcount}}
-			Total requests : {{dash.requestcount}}
+			Karma : {{data.karma}}
+			Total items: {{data.itemcount}}
+			Total requests : {{data.reqcount}}
 		</div>
 	</div>
 	
@@ -23,8 +23,8 @@
 				<div class="content">
 					<div class="header">Your items on giveaway: </div>
 					<div class="description">
-						<ul>{{#each user}}
-							<li><a href="/{{this.ownerid}}/{{itemid}}">{{this.itemname}}</a></li>
+						<ul>{{#each item}}
+							<li><a href="/{{this.originid}}/{{itemid}}">{{this.itemname}}</a></li>
 							{{/each}}
 						</ul>
 					</div>
@@ -41,8 +41,8 @@
 				<div class="content">
 					<div class="header">Items requested : </div>
 					<div class="description">
-						<ul>{{#each user}}
-							<li><a href="/{{this.ownerid}}/{{itemid}}">{{this.itemname}}</a></li>
+						<ul>{{#each requests}}
+							<li><a href="/{{this.ownerid}}/{{itemid}}">{{this.requestitem}}</a></li>
 							{{/each}}
 						</ul>
 					</div>

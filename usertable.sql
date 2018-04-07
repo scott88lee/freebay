@@ -27,7 +27,7 @@ CREATE TABLE items (
     itemname VARCHAR(255) NOT NULL,
     description TEXT,
     imglink VARCHAR(255),
-    ownerid INT,
+    originid INT,
     condition VARCHAR(50),
     shipping TEXT,
     itemvisible BOOLEAN DEFAULT TRUE,
@@ -38,7 +38,9 @@ CREATE TABLE items (
 
 CREATE TABLE requests (
     requestid SERIAL PRIMARY KEY,
-    requesteditem INT NOT NULL,
+    reqitemid INT NOT NULL,
+    requestitem VARCHAR(55) NOT NULL,
+    originid INT NOT NULL,
     message TEXT,
     reqvisible BOOLEAN DEFAULT TRUE,
     r_status VARCHAR(30),
@@ -46,16 +48,18 @@ CREATE TABLE requests (
     r_time TIME NOT NULL DEFAULT CURRENT_TIME
 );
 
-SELECT * FROM users U INNER JOIN messages M ON U.id = M.destid;
 
-SELECT * FROM users INNER JOIN messages ON users.id = messages.destid;
+-- "SELECT * FROM users INNER JOIN items ON users.id = items.ownerid WHERE users.id = '"+ request.cookies.userid + "'";
+-- SELECT * FROM users U INNER JOIN messages M ON U.id = M.destid;
 
-SELECT
-    U.*,
-    M.originid,
-    UN.firstname,
-    M.message
-FROM users U
-INNER JOIN messages M ON U.id = M.destid
-INNER JOIN users UN ON M.originid = UN.id
-WHERE U.id = 1;
+-- SELECT * FROM users INNER JOIN messages ON users.id = messages.destid;
+
+-- SELECT
+--     U.*,
+--     M.originid,
+--     UN.firstname,
+--     M.message
+-- FROM users U
+-- INNER JOIN messages M ON U.id = M.destid
+-- INNER JOIN users UN ON M.originid = UN.id
+-- WHERE U.id = 1;

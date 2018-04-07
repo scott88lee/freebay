@@ -98,18 +98,34 @@ app.get('/login', (request, response) => {         // Renders home
 
 app.get('/', (request, response) => {        
   if (request.cookies.loggedin == "true"){   //START OF USER BLOCK
+  pool.connect(( err, client, done) => {
+    if (err) console.log("Pool connect error: " + err);
 
-    pool.connect(( err, client, done) =>{
-      if (err) console.log("Pool connect error: " + err);
-      let sql = "SELECT * FROM users INNER JOIN items ON users.id = items.ownerid WHERE users.id = '"+ request.cookies.userid + "'";
+      let sql = "SELECT * FROM users WHERE email = '" + request.cookies.email + "'";
       client.query(sql, (error,res) => {
           if (error) console.log("Pool query error: " + error);
-          console.log("Query result : " + res);
+          
           let data = {
-            itemcount : res.rows.length,
-            karma: res.rows[0].karma
+            firstname : res.rows[0].firstname,
+            user_since : res.rows[0].u_date,
+            karma: res.rows[0].karma,
+            userid : res.rows[0].id
           }
-          response.render('dashboard', {user : res.rows, dash: data, firstname : request.cookies.firstname});
+
+          let sql2 = "SELECT * FROM items WHERE originid = '" + data.userid + "'";
+          client.query(sql2, (ermsg,result) => {
+            data.itemcount = result.rows.length;
+            data.item = result.rows;
+
+            let sql3 = "SELECT * FROM requests WHERE originid = '" + data.userid + "'";
+            client.query(sql3, (errmsg,resp) => {
+              data.reqcount = resp.rows.length;
+              data.requests = resp.rows;
+              
+              response.render('dashboard', {data: data, firstname: data.firstname, item: data.item, requests: data.requests});
+              done();
+            });
+          });
       });
     });
 
@@ -130,7 +146,7 @@ app.post('/give', (request, response) => {  //1
   pool.connect( (error, client, done) => {  //2
     if (error) console.log(error);
 
-    let sql = "INSERT INTO items (itemname, description, imglink, ownerid, condition, shipping) VALUES ($1, $2, $3, $4, $5, $6)";
+    let sql = "INSERT INTO items (itemname, description, imglink, originid, condition, shipping) VALUES ($1, $2, $3, $4, $5, $6)";
     let params = [request.body.itemname, request.body.description, request.body.imglink, request.cookies.userid, request.body.condition, request.body.shipping]
     client.query(sql, params,(err,res)=> {  //3
       if (err) console.log(err);
@@ -163,6 +179,7 @@ app.get('/inbox', (request,response) => {
         row : res.rows
       };
       response.render('inbox', data);
+      done();
     });
   });
 });
@@ -182,9 +199,10 @@ app.post('/login', (request, response) => { // Registration Route
 
       client.query(sql, (err, res) => {
         if (err) console.log(err);
-        console.log(res.rows);
+        
         if (res.rows.length === 0){
           response.render('login', { message : "E-mail address doesn't exist."} );
+          done();
         } else {
           bcrypt.compare(request.body.password, res.rows[0].pwdhash, (err, result) => { //run bcryot compare
             if (result === true) {
@@ -193,9 +211,10 @@ app.post('/login', (request, response) => { // Registration Route
               response.cookie('userid', res.rows[0].id);
               response.cookie('firstname', res.rows[0].firstname);
               response.redirect('/'); //Pass - Cookie! - Redirect.
-
+              done();
           } else {
             response.render('login', { message : "Wrong password, please try again."} );
+            done();
             //Fail - Wrong pass
           }
           });
@@ -230,31 +249,29 @@ app.post('/register', (request, response)  => { // Registration Route
 
         console.log(`New user signed up ${request.body.email}.`);
         response.render('login', { message : "Thanks for signing up!"});
-       
+        done();
         });
       });
     } else {  //END - FRESH EMAIL
       response.render('register', {message:"E-mail is already in use."})
     } 
-
+    done();
     }); // FIRST SQL QUERY
-
   });   // POOL CONNECT
 });     // APP.GET
 
 app.get('/:id/:itemid', (request,response) => {
 
   pool.connect(( err, client, done) =>{
-      let sql = "SELECT * FROM users INNER JOIN items ON users.id = items.ownerid WHERE users.id = '"+ request.params.id + "' AND items.itemid = '" + request.params.itemid + "'";
+      let sql = "SELECT * FROM users INNER JOIN items ON users.id = items.originid WHERE users.id = '"+ request.params.id + "' AND items.itemid = '" + request.params.itemid + "'";
       client.query(sql, (err,res) => {
             if (err) console.log(err);
-            console.log(res.rows[0]);  //
 
             if (res.rows[0].email===request.cookies.email){
               response.render('useritem', {user : res.rows[0], firstname : request.cookies.firstname});
             } else {
               response.render('item', {user : res.rows[0], firstname : request.cookies.firstname});
-            }
+            } done();
       });
     });
 });
