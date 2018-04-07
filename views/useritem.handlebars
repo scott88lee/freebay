@@ -14,21 +14,48 @@
 				</div>
 				<div class="extra content">
 					<div class="right floated author">
+						<span>Condition: </span> {{user.condition}}
+					</div>
+				</div>
+				<div class="extra content">
+					<div class="right floated author">
 						<span>Means of collection: </span> {{user.shipping}}
 					</div>
 				</div>
+				{{#if owner}}
+					<div class="ui two bottom attached buttons">
+    					<div class="ui button">
+    						<div onclick="editFunc()">Edit</div>
+							<script>
+							function editFunc() {
+        						window.location.href = "/edititem/{{user.itemid}}";
+							}
+							</script>
+    					</div>
+    					<div class="ui button">
+    						<div onclick="delFunction()">Delete</div>
+							<script>
+							function delFunction() {
+    						if (confirm("Are you sure you want to delete this item?")) {
+        					window.location.href = "/delete/{{user.itemid}}";
+    							}
+							}
+							</script>
+    					</div>
+					</div>
+				{{/if}}
 			</div>
 		</div>
-
+		{{#if owner}}
 		<div class="column">
 			<div class="ui fluid card">
 				<div class="content">
-					<div class="header">{{user.itemname}}</div>
+					<div class="header">User requests</div>
 					<div class="description">
 						<img src="{{user.imglink}}" class="ui wireframe image">
 					</div>
 					<div class="meta">
-						<span class="category">{{user.description}}</span>
+						<span class="category">Contents: Blah blah blah</span>
 					</div>
 				</div>
 				<div class="extra content">
@@ -39,5 +66,26 @@
 				</div>
 			</div>
 		</div>
+		{{else}}
+		<div class="column">
+			<div class="ui fluid card">
+				<div class="content">
+					<div class="header">Make a request</div>
+					<div class="description">
+						First blah blah blah
+					</div>
+					<div class="meta">
+						<span class="category">Second: Blah blah blah</span>
+					</div>
+				</div>
+				<div class="extra content">
+					<div class="right floated author">
+						<a href="/{{user.id}}/{{user.itemid}}/edit">Edit Item</a>
+						<a href="/{{user.id}}/{{user.itemid}}/delete">Delete Item</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		{{/if}}
 	</div>
 </div>

@@ -260,18 +260,26 @@ app.post('/register', (request, response)  => { // Registration Route
   });   // POOL CONNECT
 });     // APP.GET
 
-app.get('/:id/:itemid', (request,response) => {
-
+app.get('/item/:itemid', (request,response) => {
   pool.connect(( err, client, done) =>{
-      let sql = "SELECT * FROM users INNER JOIN items ON users.id = items.originid WHERE users.id = '"+ request.params.id + "' AND items.itemid = '" + request.params.itemid + "'";
-      client.query(sql, (err,res) => {
-            if (err) console.log(err);
 
-            if (res.rows[0].email===request.cookies.email){
-              response.render('useritem', {user : res.rows[0], firstname : request.cookies.firstname});
-            } else {
-              response.render('item', {user : res.rows[0], firstname : request.cookies.firstname});
-            } done();
+      let sql = "SELECT * FROM items WHERE itemid = '" + request.params.itemid + "'";
+      client.query(sql, (err,res) => {
+      if (err) console.log(err);
+
+        if (request.cookies.loggedin == "true") {
+          if (res.rows[0].originid == request.cookies.userid){
+            response.render('useritem', {user : res.rows[0], firstname : request.cookies.firstname, owner: true});
+            done();
+          } else { // not your item
+            response.render('useritem', {user : res.rows[0], firstname : request.cookies.firstname});
+            done();
+          }  
+        } else {
+          // Public view
+          response.render('item', {user : res.rows[0], message : "Register or log in to request for items."});
+          done();
+        }
       });
     });
 });
