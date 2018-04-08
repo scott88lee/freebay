@@ -6,17 +6,20 @@
 </style>
 <br><br>
 <div class="ui main text container">
+<div class="ui two column grid">
 {{#each item}}
-
-<div class="ui card">
+<div class="column">
+<div class="ui fluid card">
 	Item ID: {{this.itemid}}<br>
-	Owner ID: {{this.ownerid}}<br>
-	Item Name: <a href="/{{this.ownerid}}/{{this.itemid}}">{{this.itemname}}</a><br>
+	Owner ID: {{this.originid}}<br>
+	Item Name: <a href="/item/{{this.itemid}}">{{this.itemname}}</a><br>
 	Description: <p>{{this.description}}</p>
 	Image link: <br>
 	<img src="{{this.imglink}}" width="120" height="120"><br>
 	Condition: {{this.condition}}<br>
 	Shipping: {{this.shipping}}
 </div>
+</div>
 {{/each}}
+</div>
 </div>

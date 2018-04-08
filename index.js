@@ -88,6 +88,7 @@ app.get("/itemlist", (request,response) => {    // RENDERS ALL ITEMS
     let sql = "SELECT * FROM items WHERE itemvisible = true"
     pool.query(sql, (err, res) => {
       response.render('itemlist', {item : res.rows});
+      done();
     });
   });
 });
@@ -112,7 +113,7 @@ app.get('/', (request, response) => {
             userid : res.rows[0].id
           }
 
-          let sql2 = "SELECT * FROM items WHERE originid = '" + data.userid + "'";
+          let sql2 = "SELECT * FROM items WHERE originid = '" + data.userid + "' AND itemvisible = true";
           client.query(sql2, (ermsg,result) => {
             data.itemcount = result.rows.length;
             data.item = result.rows;
@@ -166,6 +167,24 @@ app.post('/give', (request, response) => {  //1
     }); // 3
   }); // 2
 }); // 1
+
+app.get('/rankings', (request,response) => {
+  pool.connect((connectError, client, done) => {
+  if (connectError) console.log(connectError);
+
+    let sql = "SELECT id,firstname,lastname,karma,pf_pic FROM users"
+    client.query(sql, (queryErr,res) =>{
+      if (res.rows.length>0) {
+        let rank = res.rows;
+        rank.sort(function(a, b) {
+        return parseFloat(b.karma) - parseFloat(a.karma);
+        });
+      response.render('rank',{rank: rank, firstname: request.cookies.firstname}});
+      }
+      done();
+    });
+  });
+});
 
 app.get('/inbox', (request,response) => {
   pool.connect((error, client, done) => {
@@ -266,21 +285,63 @@ app.get('/edititem/:itemid', (request,response) => {
       let sql = "SELECT * FROM items WHERE itemid = '" + request.params.itemid + "'";
       client.query(sql, (err, res) => {
       if (err) console.log(err);
-      console.log(res.rows);
+      
       if (res.rows[0].originid == request.cookies.userid){
-        response.render('edititem', {item:res.rows[0]});
+        response.render('edititem', {item:res.rows[0], firstname: request.cookies.firstname});
+        done();
       } else {
+        done();
         response.redirect('/'); //ITEM DOESNT BELONG TO U
       }
       });
     });
   } else { // END OF USER BLOCK
     response.render('login', {message: "You need to be logged in to edit items."});
+    done();
   }
 });
 
+app.post('/edititem/:itemid', (request,response) => {
+  let info = request.body;
+  let sql = "UPDATE items SET itemname = '"+ info.itemname + "', description = '" + info.description + "', condition = '" + info.condition + "', shipping = '" + info.shipping + "' WHERE items.itemid = '" + request.params.itemid + "'";
+
+  pool.connect((err, client, done) => {
+  if (err) console.log("Pool connection error :" + err);
+    client.query(sql, (queryErr, result) => {
+      let rPath = '/item/'+request.params.itemid;
+      response.redirect(rPath);
+      done();
+    });
+  });
+});
+
+app.get('/delete/:itemid', (request,response) => {  // 1 - Delete Route
+  let info = request.body;
+  let sql = "UPDATE items SET itemvisible = false WHERE items.itemid = '" + request.params.itemid + "'";
+
+  pool.connect((err, client, done) => {  // 2 - Pool Connection
+  if (err) console.log("Pool connection error :" + err);
+    client.query(sql, (queryErr, result) => { // 3 - Set Item to DELETE
+      if (queryErr) console.log(queryErr);
+      
+      let sql = "SELECT * FROM users WHERE email = '" + request.cookies.email + "'";
+      client.query(sql, (err,res) => {  // 4 - Read User Karma
+  
+        let karma = res.rows[0].karma - 1;
+        let cmd = "UPDATE users SET karma = '" + karma + "' WHERE email = '" + request.cookies.email + "'";
+        client.query(cmd, (err, result) => {  //5 Write User Karma
+          if (err) console.log(err);
+          
+          response.redirect('/');
+          done();
+        }); // 5
+      }); // 4
+    }); // 3
+  }); // 2
+}); // 1
+
 app.get('/item/:itemid', (request,response) => {
-  pool.connect(( err, client, done) =>{
+  pool.connect(( err, client, done) => {
 
       let sql = "SELECT * FROM items WHERE itemid = '" + request.params.itemid + "'";
       client.query(sql, (err,res) => {

@@ -6,7 +6,7 @@
 				<div class="content">
 					<div class="header">{{item.itemname}}</div>
 					<div class="description">
-						<img src="{{user.imglink}}" class="ui wireframe image">
+						<img src="{{item.imglink}}" class="ui wireframe image">
 					</div>
 					<div class="meta">
 						<span class="category">{{item.description}}</span>
@@ -28,21 +28,39 @@
 		<div class="column">
 			<div class="ui fluid card">
 				<div class="content">
-					<div class="header">{{item.itemname}}</div>
+					<div class="header">Edit Item:</div>
 					<div class="description">
-						<img src="{{item.imglink}}" class="ui wireframe image">
-					</div>
-					<div class="meta">
-						<span class="category">{{item.description}}</span>
+						<form action="/edititem/{{item.itemid}}" method="POST">
+							Item Name:<br>
+							<input type="text" name="itemname" value="{{item.itemname}}"><br>
+							Description:<br>
+							<textarea name="description" rows="7" cols="33">{{item.description}}</textarea><br>
+							Image URL:<br>
+							<input type="text" name="imglink" value="{{item.imglink}}"><br>
+							Condition :<br>
+							<select class="ui selection dropdown" name="condition">
+								<option value="Working">Working</option>
+								<option value="Needs fixing">Needs Fixing</option>
+								<option value="Parts missing">Parts Missing</option>
+							</select><br>
+
+							Shipping :<br>
+							<select class="ui selection dropdown" name="shipping">
+								<option value="Courier">Courier service</option>
+								<option value="Self Pickup">Self Pick-up</option>
+								<option value="Flexible">Flexible</option>
+							</select>
 					</div>
 				</div>
-				<div class="extra content">
-					<div class="right floated author">
-						<a href="/{{user.id}}/{{user.itemid}}/edit">Edit Item</a>
-						<a href="/{{user.id}}/{{user.itemid}}/delete">Delete Item</a>
-					</div>
-				</div>
-			</div>
+			
+						<div class="ui two bottom attached buttons">
+    						<button class="ui button" type="reset" value="reset">Reset
+    						</button>
+    						<button class="ui button" type="submit" value="submit">Submit
+    						</button>
+    					</div>
+						</form>
+						</div>
 		</div>
 	</div>
 </div>
