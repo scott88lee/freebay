@@ -172,14 +172,20 @@ app.get('/rankings', (request,response) => {
   pool.connect((connectError, client, done) => {
   if (connectError) console.log(connectError);
 
-    let sql = "SELECT id,firstname,lastname,karma,pf_pic FROM users"
+    let sql = "SELECT id,firstname,lastname,karma,pf_pic,u_date FROM users"
     client.query(sql, (queryErr,res) =>{
       if (res.rows.length>0) {
         let rank = res.rows;
         rank.sort(function(a, b) {
         return parseFloat(b.karma) - parseFloat(a.karma);
         });
-      response.render('rank',{rank: rank, firstname: request.cookies.firstname}});
+
+        for (let i=0; i<rank.length; i++){
+          let temp = res.rows[i].u_date.toString();
+          let ert = temp.slice(0,15);
+          rank[i].usr_date = ert;
+        }
+      response.render('rank',{rank: rank, firstname: request.cookies.firstname});
       }
       done();
     });
