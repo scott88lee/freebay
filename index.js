@@ -252,35 +252,43 @@ app.get('/register', (request, response) => { // Routes to register page
   response.render('register');
 });
 
+app.get('/pfreset', (request,response) => {
+  pool.connect((cError, client, done) => {
+    let sql = "UPDATE users SET pf_pic = '" + "2.bp.blogspot.com/-F8q2V2-kdEo/UVwhXeMgHdI/AAAAAAAAF80/NR3ffJlWrhU/s1600/avatar-constituent-default+%281%29.gif" + "'";
+    client.query(sql,(err,res) => {
+      response.send("done");
+      done();
+    });
+  });
+});
+
 app.post('/register', (request, response)  => { // Registration Route
-  pool.connect( ( error , client , done )  => {
-  if (error) console.log(error);
+  pool.connect((cError, client)  => {
+    if (cError) console.log("Pool connect error: " + cError);
     
     //Begin check to see if email is already taken.
     let sql = "SELECT * FROM users WHERE email = '" + request.body.email + "'";
-    client.query(sql, (err, res) => {
-      if (err) console.log(err);
+    client.query(sql, (qErr, res) => {
+      if (qErr) console.log("Query error: " + qErr);
       
       if (res.rows.length === 0) {  // START-FRESH EMAIL
 
-      bcrypt.hash(request.body.password, 10, (err,hash) => {   // Hashes password
-        
-         // Stores into DB users
-        let params = [request.body.firstname, request.body.lastname, hash, request.body.email];
-        let sql = "INSERT INTO users (firstname, lastname, pwdhash, email) VALUES ($1, $2, $3, $4)"
+        bcrypt.hash(request.body.password, 10, (err,hash) => {   // Hashes password
 
-        client.query(sql, params, (err, res) => {  // STORE SIGNUP DATA
-        if (err) console.log(err);
+          // Stores into DB users
+          let params = [request.body.firstname, request.body.lastname, hash, request.body.email];
+          let sql = "INSERT INTO users (firstname, lastname, pwdhash, email) VALUES ($1, $2, $3, $4)"
 
-        console.log(`New user signed up ${request.body.email}.`);
-        response.render('login', { message : "Thanks for signing up!"});
-        done();
+          client.query(sql, params, (queryErr, res) => {  // STORE SIGNUP DATA
+            if (queryErr) console.log("Second Query Error: "+queryErr);
+
+            console.log(`New user signed up ${request.body.email}.`);
+            response.render('login', { message : "Thanks for signing up!"});
+          });
         });
-      });
     } else {  //END - FRESH EMAIL
       response.render('register', {message:"E-mail is already in use."})
     } 
-    done();
     }); // FIRST SQL QUERY
   });   // POOL CONNECT
 });     // APP.GET
