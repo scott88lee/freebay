@@ -290,6 +290,7 @@ app.post('/register', (request, response)  => { // Registration Route
       response.render('register', {message:"E-mail is already in use."})
     } 
     }); // FIRST SQL QUERY
+    
   });   // POOL CONNECT
 });     // APP.GET
 

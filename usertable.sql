@@ -6,7 +6,7 @@ CREATE TABLE users (
     email VARCHAR(55) NOT NULL,
     karma INT DEFAULT 0,
     address TEXT,
-    pf_pic VARCHAR(80),
+    pf_pic TEXT,
     u_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
